@@ -1,8 +1,14 @@
 library(tidyverse)
 library(psych)
 library(lavaan)
-library(semPlot)
-ema <- read_csv("EMAdata_2023-1bk.csv")
+library(lubridate)
+
+ema <- read.csv("EMA data_2023-1 bk _time_event.csv")
+ema$time %>% strptime(,format = "%Y-%m-%d %H:%M:%S") -> ema$time
+table(ema$STR_jump)
+summary(ema)
+
+
 
 model <- 'level: 1
             STR_YN ~ CM_RUM
@@ -20,3 +26,7 @@ model2 <- 'level: 1
             '
 fit2 <- sem(model = model2, cluster = "ID", data = ema)
 summary(fit2)
+
+
+
+
