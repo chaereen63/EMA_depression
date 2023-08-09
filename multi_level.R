@@ -8,7 +8,7 @@ ema$time %>% strptime(,format = "%Y-%m-%d %H:%M:%S") -> ema$time
 table(ema$STR_jump)
 summary(ema)
 
-
+ema %>% mutate(days = day(ema$time)) -> ema_d
 
 model <- 'level: 1
             STR_YN ~ CM_RUM
