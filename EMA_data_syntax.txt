@@ -26,30 +26,3 @@ dat_ %>% group_by(ID, DinY) %>% summarise(count=n(), rate=n()/5,
                     MD=mean(M_DEP), MNA=mean(M_NA)) -> smmr_D
 ema_d %>% group_by(ID) %>% summarise(count=n(), rate=n()/35,
                                           MD=mean(M_DEP), MNA=mean(M_NA)) -> dd
-#시간변수 만들기
-
-
-
-##[modeling]##
-
-
-model <- 'level: 1
-            STR_YN ~ CM_RUM
-            level: 2
-            AM_EXV ~ STR_YN
-            '
-fit <- sem(model = model, cluster = "ID", data = ema)
-summary(fit)
-
-model2 <- 'level: 1
-            STR_YN ~ M_RUM
-            M_EXV ~ STR_YN
-            level: 2
-            M_RUM ~ T1_DEP + T1_RUM + T1_EXV
-            '
-fit2 <- sem(model = model2, cluster = "ID", data = ema)
-summary(fit2)
-
-
-
-
