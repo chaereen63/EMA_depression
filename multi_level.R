@@ -13,11 +13,12 @@ ema$time %>% strptime(,format = "%Y-%m-%d %H:%M:%S") -> ema$time #시간변수�
 data$time %>% strptime(,format = "%Y-%m-%d %H:%M") -> data$time
 table(data$STR_jump)
 summary(data)
-t.test(M_DEP ~ STR_YN, data, var.equal=T) #스트레스 여부에 따른 EMA 우울 점수 차이
-t.test(M_RUM ~ STR_YN, data, var.equal=T) #스트레스 여부에 따른 EMA 반추 점수 차이
-t.test(M_EXV ~ STR_YN, data, var.equal=T) #스트레스 여부에 따른 EMA 경험회피 점수 차이
-t.test(M_NA ~ STR_YN, data, var.equal=T) #스트레스 여부에 따른 EMA 부정정서 점수 차이
-## 위는 개인차를 모두 제외한 차이로 하루 단위 스트레스 발생 이전과 이후
+#pre-stress and post-stress in day
+t.test(M_DEP ~ STR_jump, data, var.equal=T) #EMA 우울
+t.test(M_RUM ~ STR_jump, data, var.equal=T) #EMA 반추
+t.test(M_EXV ~ STR_jump, data, var.equal=T) #EMA 경험회피
+t.test(M_NA ~ STR_jump, data, var.equal=T) #EMA 부정정서
+## 위는 개인차를 모두 제외한 차이
 
 
 ema %>% mutate(days = day(ema$time), week=week(ema$time)) -> ema_d #날짜만 열로 산출
