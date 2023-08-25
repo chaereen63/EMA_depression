@@ -37,7 +37,10 @@ ema_d %>% group_by(ID) %>% summarise(count=n(), rate=n()/35,
                                           MD=mean(M_DEP), MNA=mean(M_NA)) -> dd
 
 #시간변수 만들기: pre-stress slope, post-stress slope, time vari
-dat_
+# 개인의 사건 발생 시점을 기준으로 시간변수를 만들어야 함.
+
+dat_ %>% group_by(ID) %>% scale()
+
 #하루단위로 볼 필요도 있을 것 같음.
 day
 
