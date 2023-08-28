@@ -35,8 +35,7 @@ dat_ %>% group_by(ID) %>% summarise(count=n(), rate=n()/35,
 # 개인의 사건 발생 시점을 기준으로 시간변수를 만들어야 함.
 EMAtb <- data.table::fread("EMA_time_var.csv")
 EMAtb[,.(ID, DinY, Hour, STR_jump)]
-setkey(ID, DinY, Hour)
-dat_[,]
+EMAtb[,]
 dat_ %>% group_by(ID) %>% scale()
 
 #하루단위로 볼 필요도 있을 것 같음.
