@@ -38,6 +38,35 @@ EMAtb[,.(ID, DinY, Hour, STR_jump)]
 EMAtb[,]
 dat_ %>% group_by(ID) %>% scale()
 
+library(data.table)
+
+# 예시 데이터 생성
+dt <- data.table(id = 1:5, value = c(10, 12, 15, 20, 22))
+
+# 특정 id 값에 해당하는 행을 선택하여 해당 행의 value 값을 기준으로 센터링
+target_id <- 3
+desired_value <- dt[id == target_id, value]
+
+dt[, centered_value := value - desired_value]
+
+print(dt)
+
+library(data.table)
+
+# 예시 데이터 생성
+dt <- data.table(id = 1:5, value = c(10, 5, 8, 12, 6))
+
+# 기준이 될 행의 id 값
+reference_id <- 2
+
+# 해당 행의 value 값 가져오기
+reference_value <- dt[id == reference_id, value]
+
+# 순차적으로 값 더해나가기
+dt[, cumulative_sum := cumsum(value - reference_value), by = id > reference_id]
+
+print(dt)
+
 #하루단위로 볼 필요도 있을 것 같음.
 day
 
