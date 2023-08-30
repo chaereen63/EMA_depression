@@ -24,7 +24,7 @@ data %>% mutate(days = day(data$time), DinY = yday(time), AMPM = ifelse(am(time)
 #write_csv(dat_,"EMA_time_var.csv", na='NA')
 
 #하루 스트레스 빈도 및 변수 별 평균 (우울, 부정정서, 반추, 경험회피)
-dat_ %>% group_by(ID, DinY) %>% summarise(count=n(), rate=n()/5,
+dat_ %>% group_by(ID, DinY) %>% summarise(count=n(), rate=n()/5, 
                     dMDEP=mean(M_DEP), dMNA=mean(M_NA), dMRUM=mean(M_RUM), dMEXV=mean(M_EXV)) -> smmr_D
 dat_ %>% group_by(ID, DinY, STR_jump) %>% summarise(count=n(), rate=n()/5,
                                           djMD=mean(M_DEP), djMNA=mean(M_NA), djMRUM=mean(M_RUM), djMEXV=mean(M_EXV)) -> smmr_J
@@ -34,6 +34,7 @@ dat_ %>% group_by(ID) %>% summarise(count=n(), rate=n()/35,
 # 시간변수 만들기: pre-stress slope, post-stress slope, time vari
 # 개인의 사건 발생 시점을 기준으로 시간변수를 만들어야 함.
 EMAtb <- data.table::fread("EMA_time_var.csv")
+#group: 개인, 개인 내 하루, 하루 내 시간, 하루 내 스트레스 점프
 EMAtb[,.(ID, DinY, Hour, STR_jump)]
 EMAtb[,]
 dat_ %>% group_by(ID) %>% scale()
@@ -68,7 +69,11 @@ dt[, cumulative_sum := cumsum(value - reference_value), by = id > reference_id]
 print(dt)
 
 #하루단위로 볼 필요도 있을 것 같음.
-day
+# 회귀
+summary(lm(M_RUM ~ DinY, data = dat_)) #다만 여기서는 개인차가 모두 제외됨.
+summary(lm(M_EXV ~ DinY, data = dat_))
+summary(lm(M_EXV ~ DinY*ID, data = dat_))
+#개인, 하루단위 별로 보았을 때: 상호작용으로 보는 게 맞는지는 모르겠다.
 
 ##[modeling]##
 

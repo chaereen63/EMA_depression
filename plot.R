@@ -38,3 +38,40 @@ stress_Y <- subset(dat_, STR_jump =="1")
 stress_N <- subset(dat_, STR_jump =="0")
 abline(lm(stress_Y$M_RUM ~ stress_Y$tseq), col = "green")
 abline(lm(stress_N$M_RUM ~ stress_N$tseq), col = "orange")
+#자료의 표현
+plot(dat_$DinY, dat_$M_RUM,
+     col = dat_$ID,
+     xlab = "하루 별 응답", ylab = "시간 별 반추")
+abline(lm(M_RUM ~ DinY*ID, data = dat_), col = dat_$ID)
+abline(lm(M_RUM ~ DinY*ID, data = dat_), col = dat_$ID)
+#visualizing
+linep <- ggplot(data=dat_, aes(y=CM_RUM, x=tseq, color=ID, group=ID)) + 
+  geom_point() + geom_line() +
+  ggtitle("개인별  하루 간격 반추의 변화") + 
+  theme(legend.position = "none")
+linep
+#visualizing
+linep <- ggplot(data=smmr_test, aes(y=dMRUM, x=tseq, color=ID, group=ID)) + 
+  geom_point() + geom_line() +
+  ggtitle("개인별  하루 간격 반추의 변화_하루 평균치") + 
+  theme(legend.position = "none")
+linep
+#visualizing
+linep <- ggplot(data=dat_, aes(y=CM_RUM, x=tseq, color=Hour, group=ID)) + 
+  geom_point() + geom_line() +
+  ggtitle("") + 
+  theme(legend.position = "none")
+linep
+#visualizing
+linep <- ggplot(data=dat_, aes(y=CM_EXV, x=tseq, color=Hour, group=ID)) + 
+  geom_point() + geom_line() +
+  labs(x = "응답순서", y = "경험회피", 
+       title = "") + 
+  theme(legend.position = "none")
+linep
+#visualizing_hours
+linep <- ggplot(data=dat_, aes(y=CM_RUM, x=Hour, color=STR_YN, group=STR_YN)) + 
+  geom_point() + geom_line() + 
+  ggtitle("") + 
+  theme(legend.position = "none") + scale_x_continuous(breaks = c(9,12,15,18,21,24))
+linep
