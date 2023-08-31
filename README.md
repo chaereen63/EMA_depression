@@ -22,4 +22,4 @@ CM_NA	M_NA - AM_NA, person-mean centering한 EMA 부정정서
 STR_YN	스트레스 유무(0: 무, 1: 유)
 STR_L	스트레스 주관적 강도
 -99	결측치
-![image](https://github.com/chaereen63/EMA_depression/assets/137036641/8deed14c-b4d4-484d-b445-6809cf281c84)
+
