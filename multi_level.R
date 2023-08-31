@@ -113,21 +113,9 @@ model4 <- 'level: 1
             M_RUM ~ STR_YN
             M_RUM ~ M_EXV
             level: 2
-            M_RUM ~ T1_DEP + T1_RUM + T1_EXV
-            M_EXV ~ T1_DEP + T1_RUM + T1_EXV
+            STR_YN ~ M_EXV
+            M_RUM ~ STR_YN
+            M_RUM ~ M_EXV
             '
 fit4 <- sem(model = model4, cluster = "ID", data = dat_)
 summary(fit4)
-
-#model5: 순차적 매개모형
-# STR -> EXV -> RUM -> DEP
-svD <- read_csv("EMA_time_var.csv")
-model5 <- 'level: 1
-            M_DEP ~ M_RUM
-            M_RUM ~ M_EXV
-            M_EXV ~ STR_YN
-            level: 2
-            M_RUM ~ T1_DEP + M_EXV
-            M_EXV ~ STR_YN'
-fit5 <- sem(model = model5, cluster = "ID", data = svD)
-summary(fit5)
