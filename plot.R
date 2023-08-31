@@ -94,14 +94,32 @@ linep <- ggplot(data=dat_, aes(y=CM_RUM, x=Hour, color=factor(STR_YN), group=ID)
 linep
 
 #visualizing_hours: 이전 스트레스와 다음 스트레스
-linep <- ggplot(data=dat_, aes(y=CM_RUM, x=Hour, color=factor(STR_YN), group=STR_YN)) + 
+linep <- ggplot(data=dat_, aes(y=CM_RUM, x=Hour, color=factor(STR_YN), group=ID)) + 
   geom_point() + geom_line() + 
   labs(x = "Time(단위: 시)", y = "반추(person-mean centering)", 
        title = "하루 내 스트레스 유무에 따른 차이_반추") + 
   theme(legend.position = "right") + scale_x_continuous(breaks = c(9,12,15,18,21,24))
 linep
+linep_EXV <- ggplot(data=dat_, aes(y=CM_EXV, x=Hour, color=factor(STR_YN), group=STR_YN)) + 
+  geom_point() + geom_line() + 
+  labs(x = "Time(단위: 시)", y = "경험회피(person-mean centering)", 
+       title = "하루 내 스트레스 유무에 따른 차이_경험회피") + 
+  theme(legend.position = "right") + scale_x_continuous(breaks = c(9,12,15,18,21,24))
+linep_EXV
+linep_DEP <- ggplot(data=dat_, aes(y=CM_DEP, x=Hour, color=factor(STR_YN), group=STR_YN)) + 
+  geom_point() + geom_line() + 
+  labs(x = "Time(단위: 시)", y = "우울(person-mean centering)", 
+       title = "하루 내 스트레스 유무에 따른 차이_우울") + 
+  theme(legend.position = "right") + scale_x_continuous(breaks = c(9,12,15,18,21,24))
+linep_DEP
+linep_NA <- ggplot(data=dat_, aes(y=CM_NA, x=Hour, color=factor(STR_YN), group=STR_YN)) + 
+  geom_point() + geom_line() + 
+  labs(x = "Time(단위: 시)", y = "부정정서(person-mean centering)", 
+       title = "하루 내 스트레스 유무에 따른 차이_부정정서") + 
+  theme(legend.position = "right") + scale_x_continuous(breaks = c(9,12,15,18,21,24))
+linep_NA
 #visualizing_hours: 스트레스 발생
-linep <- ggplot(data=dat_, aes(y=CM_RUM, x=Hour, color=factor(STR_YN), group=STR_YN, shape=factor(STR_jump))) + 
+linep <- ggplot(data=dat_, aes(y=CM_RUM, x=Hour, color=factor(STR_jump), group=STR_jump, shape=factor(STR_YN))) + 
   geom_point() + geom_line() + 
   labs(x = "Time(단위: 시)", y = "반추(person-mean centering)", 
        title = "하루 내 스트레스 최초발생 전후 구분_반추") + 

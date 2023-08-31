@@ -92,9 +92,8 @@ model4 <- 'level: 1
             CM_RUM ~ STR_YN
             CM_RUM ~ CM_EXV
             level: 2
-            STR_YN ~ CM_EXV
-            CM_RUM ~ STR_YN
-            CM_RUM ~ CM_EXV
+            AM_EXV ~ T1_DEP + T1_RUM + T1_EXV
+            AM_RUM ~ T1_DEP + T1_RUM + T1_EXV
             '
 fit4 <- sem(model = model4, cluster = "ID", data = dat_)
 summary(fit4)
