@@ -34,6 +34,7 @@ dat_ %>% group_by(ID) %>% summarise(count=n(), rate=n()/35,
 # 시간변수 만들기: pre-stress slope, post-stress slope, time vari
 # 개인의 사건 발생 시점을 기준으로 시간변수를 만들어야 함.
 EMAtb <- data.table::fread("EMA_time_var.csv")
+dat_ <- read_csv("EMA_time_var.csv")
 #group: 개인, 개인 내 하루, 하루 내 시간, 하루 내 스트레스 점프
 EMAtb[,.(ID, DinY, Hour, STR_jump)]
 EMAtb[,]
@@ -41,30 +42,8 @@ dat_ %>% group_by(ID) %>% scale()
 
 library(data.table)
 
-# 예시 데이터 생성
-dt <- data.table(id = 1:5, value = c(10, 12, 15, 20, 22))
-
-# 특정 id 값에 해당하는 행을 선택하여 해당 행의 value 값을 기준으로 센터링
-target_id <- 3
-desired_value <- dt[id == target_id, value]
-
-dt[, centered_value := value - desired_value]
-
-print(dt)
-
-library(data.table)
-
-# 예시 데이터 생성
-dt <- data.table(id = 1:5, value = c(10, 5, 8, 12, 6))
-
-# 기준이 될 행의 id 값
-reference_id <- 2
-
-# 해당 행의 value 값 가져오기
-reference_value <- dt[id == reference_id, value]
-
-# 순차적으로 값 더해나가기
-dt[, cumulative_sum := cumsum(value - reference_value), by = id > reference_id]
+#time scale
+dat_ %>%  mutate(C_Hour = scale(Hour, center = F, scale = T)) -> fin
 
 print(dt)
 
@@ -109,13 +88,14 @@ fit3 <- sem(model = model3, cluster = "ID", data = dat_)
 summary(fit3)
 #model4: 간접, 작접효과
 model4 <- 'level: 1
-            STR_YN ~ M_EXV
+            STR_YN ~ M_EXV 
             M_RUM ~ STR_YN
-            M_RUM ~ M_EXV
+            M_RUM ~ M_EXV 
+            M_RUM ~~ + M_DEP
             level: 2
-            STR_YN ~ M_EXV
+            STR_YN ~ M_EXV 
             M_RUM ~ STR_YN
-            M_RUM ~ M_EXV
+            M_RUM ~ M_EXV + AM_DEP
             '
 fit4 <- sem(model = model4, cluster = "ID", data = dat_)
 summary(fit4)
