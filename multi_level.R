@@ -88,14 +88,13 @@ fit3 <- sem(model = model3, cluster = "ID", data = dat_)
 summary(fit3)
 #model4: 간접, 작접효과
 model4 <- 'level: 1
-            STR_YN ~ M_EXV 
-            M_RUM ~ STR_YN
-            M_RUM ~ M_EXV 
-            M_RUM ~~ + M_DEP
+            STR_YN ~ CM_EXV
+            CM_RUM ~ STR_YN
+            CM_RUM ~ CM_EXV
             level: 2
-            STR_YN ~ M_EXV 
-            M_RUM ~ STR_YN
-            M_RUM ~ M_EXV + AM_DEP
+            STR_YN ~ CM_EXV
+            CM_RUM ~ STR_YN
+            CM_RUM ~ CM_EXV
             '
 fit4 <- sem(model = model4, cluster = "ID", data = dat_)
 summary(fit4)
