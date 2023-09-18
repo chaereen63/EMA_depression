@@ -28,9 +28,22 @@ mod_SM <- 'level: 1
           '
 fitsm <- sem(model = mod_SM, cluster = "ID", data = dat_)
 summary(fitsm)
-lavInspect(fitsm, "icc")
-lavInspect(fit)
+lavInspect(fitsm, "icc") #mplus 결과랑 다른 이유가..?
+lavInspect(fitsm, "h1")
 #clear!!
+#ICC가 0에 가까운데, MLM을 해야하는가? 그냥 sem
+lmodel <- 'CM_EXV ~ STR_YN
+          CM_RUM ~ CM_EXV + STR_YN
+          CM_DEP ~ CM_RUM + CM_EXV + STR_YN
+          '
+fitL <- sem(model = lmodel, data = dat_)
+summary(fitL) #level1에서의 결과가 같다.
+lmodel2 <- 'AM_DEP ~ AM_EXV + AM_RUM
+            AM_RUM ~ AM_EXV
+          '
+fitL2 <- sem(model = lmodel2, data = dat_)
+summary(fitL2) #level2의 결과와 조금 다름
+
 #제약 있는 모형(해야할까? 아니면 그대로 해석하는 게 좋을까?)
 
 #스트레스 강도로 조절
