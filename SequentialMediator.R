@@ -1,4 +1,5 @@
 ### new one_순차 매개 모형
+data <- read_csv("EMAdata_bk_TE.csv")
 #level2설정을 위해 주관적 스트레스의 시간적 변화 살펴보기_산점도
 plot(dat_$tseq, dat_$STR_L,
      col = ifelse(dat_$STR_YN == "1", "green", "red"), 
@@ -16,4 +17,20 @@ abline(lm(stress_N$STR_L ~ stress_N$tseq), col = "red")
 #그림으로 더 볼 것:더 뭘...
 
 # analyses
+## mod_SM: 제약 없는 모형 Lv.1) 순차매개 Lv.2) 평균적인 변화
+mod_SM <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
+           level: 2
+            AM_DEP ~ AM_EXV + AM_RUM
+            AM_RUM ~ AM_EXV
+          '
+fitsm <- sem(model = mod_SM, cluster = "ID", data = dat_)
+summary(fitsm)
+lavInspect(fitsm, "icc")
+lavInspect(fit)
+#clear!!
+#제약 있는 모형(해야할까? 아니면 그대로 해석하는 게 좋을까?)
 
+#스트레스 강도로 조절
