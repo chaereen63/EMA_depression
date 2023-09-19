@@ -1,3 +1,6 @@
+library(tidyverse);library(psych)
+library(lavaan);library(lubridate)
+library(data.table);library(ggplot2)
 ### new one_순차 매개 모형
 data <- read_csv("EMAdata_bk_TE.csv")
 #level2설정을 위해 주관적 스트레스의 시간적 변화 살펴보기_산점도
@@ -28,7 +31,7 @@ mod_SM <- 'level: 1
           '
 fitsm <- sem(model = mod_SM, cluster = "ID", data = dat_)
 summary(fitsm)
-lavInspect(fitsm, "icc") #mplus 결과랑 다른 이유가..?
+lavInspect(fitsm, "icc") #mplus?
 lavInspect(fitsm, "h1")
 #clear!!
 #ICC가 0에 가까운데, MLM을 해야하는가? 그냥 sem
@@ -45,5 +48,27 @@ fitL2 <- sem(model = lmodel2, data = dat_)
 summary(fitL2) #level2의 결과와 조금 다름
 
 #제약 있는 모형(해야할까? 아니면 그대로 해석하는 게 좋을까?)
-
-#스트레스 강도로 조절
+# 유의하지 않았던 부분 생략
+mod_SMr <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
+           level: 2
+            AM_DEP ~ AM_RUM
+            AM_RUM ~ AM_EXV
+          '
+fitr <- sem(model = mod_SMr, cluster = "ID", data = dat_)
+summary(fitr)
+lavInspect(fitr, "icc")
+lavInspect(fitr, 'h1')
+#스트레스 강도로 조절 (조절효과 항 추가)
+subjectM <- 'level: 1
+            CM_EXV ~ STR_YN  + STR_YN*STR_L
+            CM_RUM ~ CM_EXV + STR_YN + STR_YN*STR_L
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L
+           level: 2
+            AM_DEP ~ AM_RUM
+            AM_RUM ~ AM_EXV
+          '
+fitsub <- sem(model = subjectM, data = dat_, cluster = "ID")
+summary(fitsub)
