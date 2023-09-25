@@ -47,20 +47,6 @@ lmodel2 <- 'AM_DEP ~ AM_EXV + AM_RUM
 fitL2 <- sem(model = lmodel2, data = dat_)
 summary(fitL2) #level2의 결과와 조금 다름
 
-#제약 있는 모형(해야할까? 아니면 그대로 해석하는 게 좋을까?)
-# 유의하지 않았던 부분 생략
-mod_SMr <- 'level: 1
-            CM_EXV ~ STR_YN
-            CM_RUM ~ CM_EXV + STR_YN
-            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
-           level: 2
-            AM_DEP ~ AM_RUM
-            AM_RUM ~ AM_EXV
-          '
-fitr <- sem(model = mod_SMr, cluster = "ID", data = dat_)
-summary(fitr)
-lavInspect(fitr, "icc")
-lavInspect(fitr, 'h1')
 #스트레스 강도로 조절 (조절효과 항 추가)
 subjectM <- 'level: 1
             CM_EXV ~ STR_YN  + STR_YN*STR_L
@@ -72,3 +58,5 @@ subjectM <- 'level: 1
           '
 fitsub <- sem(model = subjectM, data = dat_, cluster = "ID")
 summary(fitsub)
+lavInspect(fitsub, "icc")
+lavInspect(fitsub, 'h1')
