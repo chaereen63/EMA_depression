@@ -1,8 +1,8 @@
 library(tidyverse);library(psych)
 library(lavaan);library(lubridate)
-library(data.table);library(ggplot2)
+library(nlme);library(lme4);library(lmerTest);library(ggplot2)
 ### new one_순차 매개 모형
-data <- read_csv("EMAdata_bk_TE.csv")
+dat_ <- read_csv("EMAdata_bk_TE.csv")
 #level2설정을 위해 주관적 스트레스의 시간적 변화 살펴보기_산점도
 plot(dat_$tseq, dat_$STR_L,
      col = ifelse(dat_$STR_YN == "1", "green", "red"), 
@@ -60,3 +60,26 @@ fitsub <- sem(model = subjectM, data = dat_, cluster = "ID")
 summary(fitsub)
 lavInspect(fitsub, "icc")
 lavInspect(fitsub, 'h1')
+
+
+#lme function으로 구하기
+intercept.only <- lme(CM_DEP ~ 1, 
+                      random = ~1 | ID,
+                      dat_, method = "ML", na.action = na.omit)
+summary(intercept.only)
+VarCorr(intercept.only)
+random.intercept <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L,
+                        random = ~1 | ID,
+                        dat_, method = "ML", na.action = na.omit)
+summary(random.intercept)
+VarCorr(random.intercept)
+random.coefficients <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L,
+                           random = ~ CM_RUM + CM_EXV | ID,
+                           dat_, method = "ML", na.action = na.omit)
+summary(random.coefficients)
+lv1_model <- 'CM_EXV ~ STR_YN  + STR_YN*STR_L
+            CM_RUM ~ CM_EXV + STR_YN + STR_YN*STR_L
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L'
+intercept.slop.model <- lme(lv1_model,
+                      random = CM_EXV + CM_RUM + CM_DEP | ID,
+                      dat_, mothod = "ML", na.action = na.omit)
