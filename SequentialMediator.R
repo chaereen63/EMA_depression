@@ -1,6 +1,7 @@
 library(tidyverse);library(psych)
 library(lavaan);library(lubridate)
-library(nlme);library(lme4);library(lmerTest);library(ggplot2)
+library(nlme);library(lme4);library(lmerTest);library(ggplot2);library(multilevel)
+install.packages("multilevel")
 ### new one_순차 매개 모형
 dat_ <- read_csv("EMAdata_bk_TE.csv")
 #level2설정을 위해 주관적 스트레스의 시간적 변화 살펴보기_산점도
@@ -20,6 +21,18 @@ abline(lm(stress_N$STR_L ~ stress_N$tseq), col = "red")
 #그림으로 더 볼 것:더 뭘...
 
 # analyses
+## ICCs
+hrs.DEP <- aov(M_DEP~as.factor(ID),data=dat_)
+hrs.RUM <- aov(M_RUM~as.factor(ID),data=dat_)
+hrs.EXV <- aov(M_EXV~as.factor(ID),data=dat_)
+hrs.STR_L <- aov(STR_L~as.factor(ID),data=dat_)
+hrs.STR_YN <- aov(STR_YN~as.factor(ID),data=dat_)
+ICC1(hrs.DEP);ICC2(hrs.DEP)
+ICC1(hrs.RUM);ICC2(hrs.RUM)
+ICC1(hrs.EXV);ICC2(hrs.EXV)
+ICC1(hrs.STR_L);ICC2(hrs.STR_L)
+ICC1(hrs.STR_YN);ICC2(hrs.STR_YN)
+
 ## mod_SM: 제약 없는 모형 Lv.1) 순차매개 Lv.2) 평균적인 변화
 mod_SM <- 'level: 1
             CM_EXV ~ STR_YN
