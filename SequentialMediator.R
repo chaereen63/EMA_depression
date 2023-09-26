@@ -49,11 +49,11 @@ summary(fitL2) #level2의 결과와 조금 다름
 
 #스트레스 강도로 조절 (조절효과 항 추가)
 subjectM <- 'level: 1
-            CM_EXV ~ STR_YN  + STR_YN*STR_L
-            CM_RUM ~ CM_EXV + STR_YN + STR_YN*STR_L
-            CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L
+            CM_EXV ~ STR_YN  + STR_L + STR_YN*STR_L
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV
            level: 2
-            AM_DEP ~ AM_RUM
+            AM_DEP ~ AM_EXV + AM_RUM
             AM_RUM ~ AM_EXV
           '
 fitsub <- sem(model = subjectM, data = dat_, cluster = "ID")
@@ -77,9 +77,9 @@ random.coefficients <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L,
                            random = ~ CM_RUM + CM_EXV | ID,
                            dat_, method = "ML", na.action = na.omit)
 summary(random.coefficients)
-lv1_model <- 'CM_EXV ~ STR_YN  + STR_YN*STR_L
-            CM_RUM ~ CM_EXV + STR_YN + STR_YN*STR_L
-            CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L'
+lv1_model <- 'CM_EXV ~ STR_YN  + STR_L + STR_YN*STR_L
+            CM_RUM ~ CM_EXV + STR_YN + STR_L + STR_YN*STR_L
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_L + STR_YN*STR_L'
 intercept.slop.model <- lme(lv1_model,
                       random = CM_EXV + CM_RUM + CM_DEP | ID,
                       dat_, mothod = "ML", na.action = na.omit)
