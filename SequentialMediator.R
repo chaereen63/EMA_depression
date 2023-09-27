@@ -1,32 +1,30 @@
 library(tidyverse);library(psych)
 library(lavaan);library(lubridate)
 library(nlme);library(lme4);library(lmerTest);library(ggplot2);library(multilevel)
-install.packages("multilevel")
+
 ### new one_순차 매개 모형
-dat_ <- read_csv("EMAdata_bk_TE.csv")
+ema <- read_csv("EMAdata_bk_TE.csv")
 #level2설정을 위해 주관적 스트레스의 시간적 변화 살펴보기_산점도
-plot(dat_$tseq, dat_$STR_L,
-     col = ifelse(dat_$STR_YN == "1", "green", "red"), 
-     pch = ifelse(dat_$STR_YN == "1", 17, 19), main = "스트레스 경험 유무",
+plot(ema$tseq, ema$STR_L,
+     col = ifelse(ema$STR_YN == "1", "green", "red"), 
+     pch = ifelse(ema$STR_YN == "1", 17, 19), main = "스트레스 경험 유무",
      xlab = "응답순서", ylab = "시간 별 스트레스 강도")
 legend("topleft", pch = c(17, 19),
        c("stress_YES", "stress_NO"),
        col = c("green", "red"))
-stress_Y <- subset(dat_, STR_YN =="1")
-stress_N <- subset(dat_, STR_YN =="0")
+stress_Y <- subset(ema, STR_YN =="1")
+stress_N <- subset(ema, STR_YN =="0")
 abline(lm(stress_Y$STR_L ~ stress_Y$tseq), col = "green")
 abline(lm(stress_N$STR_L ~ stress_N$tseq), col = "red")
-#일단 스트레스 강도는 level 2에서 보면 약간의 차이는 있겠지만 잘 모르겠다.. 
-#Yes or No로 구분하는 것은 의미 있을 수 있으나, 개인 내로 보는 게 더 적절
-#그림으로 더 볼 것:더 뭘...
+#일단 스트레스 강도는 level 2에서 보면 약간의 차이
 
 # analyses
 ## ICCs
-hrs.DEP <- aov(M_DEP~as.factor(ID),data=dat_)
-hrs.RUM <- aov(M_RUM~as.factor(ID),data=dat_)
-hrs.EXV <- aov(M_EXV~as.factor(ID),data=dat_)
-hrs.STR_L <- aov(STR_L~as.factor(ID),data=dat_)
-hrs.STR_YN <- aov(STR_YN~as.factor(ID),data=dat_)
+hrs.DEP <- aov(M_DEP~as.factor(ID),data=ema)
+hrs.RUM <- aov(M_RUM~as.factor(ID),data=ema)
+hrs.EXV <- aov(M_EXV~as.factor(ID),data=ema)
+hrs.STR_L <- aov(STR_L~as.factor(ID),data=ema)
+hrs.STR_YN <- aov(STR_YN~as.factor(ID),data=ema)
 ICC1(hrs.DEP);ICC2(hrs.DEP)
 ICC1(hrs.RUM);ICC2(hrs.RUM)
 ICC1(hrs.EXV);ICC2(hrs.EXV)
@@ -42,12 +40,10 @@ mod_SM <- 'level: 1
             AM_DEP ~ AM_EXV + AM_RUM
             AM_RUM ~ AM_EXV
           '
-fitsm <- sem(model = mod_SM, cluster = "ID", data = dat_)
+fitsm <- sem(model = mod_SM, cluster = "ID", data = ema)
 summary(fitsm)
-lavInspect(fitsm, "icc") #mplus?
-lavInspect(fitsm, "h1")
 #clear!!
-#ICC가 0에 가까운데, MLM을 해야하는가? 그냥 sem
+#multi-level?
 lmodel <- 'CM_EXV ~ STR_YN
           CM_RUM ~ CM_EXV + STR_YN
           CM_DEP ~ CM_RUM + CM_EXV + STR_YN
@@ -57,7 +53,7 @@ summary(fitL) #level1에서의 결과가 같다.
 lmodel2 <- 'AM_DEP ~ AM_EXV + AM_RUM
             AM_RUM ~ AM_EXV
           '
-fitL2 <- sem(model = lmodel2, data = dat_)
+fitL2 <- sem(model = lmodel2, data = ema)
 summary(fitL2) #level2의 결과와 조금 다름
 
 #스트레스 강도로 조절 (조절효과 항 추가)
@@ -69,30 +65,38 @@ subjectM <- 'level: 1
             AM_DEP ~ AM_EXV + AM_RUM
             AM_RUM ~ AM_EXV
           '
-fitsub <- sem(model = subjectM, data = dat_, cluster = "ID")
+fitsub <- sem(model = subjectM, data = ema, cluster = "ID")
 summary(fitsub)
-lavInspect(fitsub, "icc")
-lavInspect(fitsub, 'h1')
+lavInspect(fitsub, 'icc') #적합 이후의 icc
+lavInspect(fitsub, 'h1') #비제약 모델에 대한 평균, 공분산
 
+
+#스트레스 강도 조절효과_수준간 상호작용?
+subjectM <- 'level: 1
+            CM_EXV ~ STR_YN  + STR_L + STR_YN*STR_L
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV
+           level: 2
+            AM_DEP ~ AM_EXV + AM_RUM
+            AM_RUM ~ AM_EXV
+          '
+fitsub <- sem(model = subjectM, data = ema, cluster = "ID")
+summary(fitsub)
 
 #lme function으로 구하기
 intercept.only <- lme(CM_DEP ~ 1, 
                       random = ~1 | ID,
-                      dat_, method = "ML", na.action = na.omit)
+                      ema, method = "ML", na.action = na.omit)
 summary(intercept.only)
-VarCorr(intercept.only)
-random.intercept <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L,
+VarCorr(intercept.only) #비표준화 점수
+random.intercept <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_L + STR_YN*STR_L,
                         random = ~1 | ID,
-                        dat_, method = "ML", na.action = na.omit)
+                        ema, method = "ML", na.action = na.omit)
 summary(random.intercept)
 VarCorr(random.intercept)
 random.coefficients <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L,
                            random = ~ CM_RUM + CM_EXV | ID,
-                           dat_, method = "ML", na.action = na.omit)
+                           ema, method = "ML", na.action = na.omit)
 summary(random.coefficients)
-lv1_model <- 'CM_EXV ~ STR_YN  + STR_L + STR_YN*STR_L
-            CM_RUM ~ CM_EXV + STR_YN + STR_L + STR_YN*STR_L
-            CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_L + STR_YN*STR_L'
-intercept.slop.model <- lme(lv1_model,
-                      random = CM_EXV + CM_RUM + CM_DEP | ID,
-                      dat_, mothod = "ML", na.action = na.omit)
+VarCorr(random.coefficients)
+#main model
