@@ -70,6 +70,20 @@ summary(fitsub)
 lavInspect(fitsub, 'icc') #적합 이후의 icc
 lavInspect(fitsub, 'h1') #비제약 모델에 대한 평균, 공분산
 
+#스트레스 강도가 2수준에서 조절
+#개인 별 스트레스 평균 구하기
+subjectM2 <- 'level: 1
+            CM_EXV ~ STR_YN  
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV
+           level: 2
+            AM_RUM ~ STR_L
+          '
+fitsub <- sem(model = subjectM2, data = ema, cluster = "ID")
+summary(fitsub)
+lavInspect(fitsub, 'icc') #적합 이후의 icc
+lavInspect(fitsub, 'h1') #비제약 모델에 대한 평균, 공분산
+
 
 #스트레스 강도 조절효과_수준간 상호작용?
 subjectM <- 'level: 1
@@ -100,3 +114,28 @@ random.coefficients <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + STR_YN*STR_L,
 summary(random.coefficients)
 VarCorr(random.coefficients)
 #main model
+  # model2
+  ## lme로는 순차매개가 안됨(복잡한 모형을 못봄)
+intercept.as.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL, 
+                            random = ~ 1 | ID,
+                            M_EMA, method = "ML", na.action = na.omit)
+summary(intercept.as.outcome)
+VarCorr(intercept.as.outcome)
+intercept.slope.as.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL,
+                            random = ~ M_STRL | ID,
+                            M_EMA, method = "ML", na.action = na.omit)
+summary(intercept.slope.as.outcome)
+VarCorr(intercept.slope.as.outcome)
+anova(intercept.slope.as.outcome, intercept.as.outcome)
+ #차이가 없음. 평균적인 스트레스 강도에 따라 경험회피가 조절된다는 설명은 의미가 없을지도?
+  ##SEM: 순차매개를 lme로는 볼 수가 없으므로 multi-level SEM으로 분석
+  # 단 multi level sem은 모형 적합도를 산출해주지 않으므로 별도의 계산이 필요해 보임.
+subjectS <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV
+           level: 2
+            AM_EXV ~ M_STRL
+          '
+fitsub <- sem(model = subjectS, data = M_EMA, cluster = "ID")
+summary(fitsub)
