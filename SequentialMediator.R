@@ -127,15 +127,28 @@ intercept.slope.as.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL,
 summary(intercept.slope.as.outcome)
 VarCorr(intercept.slope.as.outcome)
 anova(intercept.slope.as.outcome, intercept.as.outcome)
+#interaction.intercept.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL + CM_EXV*M_STRL,
+#                                  random = ~ 1 | ID,
+#                                  M_EMA, method = "ML", na.action = na.omit)
+#summary(interaction.intercept.outcome)
+#anova(inercept.as.outcome, interaction.intercept.outcome)
+#VarCorr(interaction.intercept.outcome)
+#interaction.slope.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL + CM_EXV*M_STRL,
+#                                     random = ~ CM_EXV | ID,
+#                                     M_EMA, method = "ML", na.action = na.omit)
+#summary(interaction.slope.outcome)
+#VarCorr(interaction.slope.outcome)
+#anova(intercept.as.outcome, intercept.only)
+
  #차이가 없음. 평균적인 스트레스 강도에 따라 경험회피가 조절된다는 설명은 의미가 없을지도?
   ##SEM: 순차매개를 lme로는 볼 수가 없으므로 multi-level SEM으로 분석
   # 단 multi level sem은 모형 적합도를 산출해주지 않으므로 별도의 계산이 필요해 보임.
 subjectS <- 'level: 1
-            CM_EXV ~ STR_YN
+            CM_EXV ~ STR_YN + M_STRL + STR_YN*M_STRL
             CM_RUM ~ CM_EXV + STR_YN
             CM_DEP ~ CM_RUM + CM_EXV
            level: 2
             AM_EXV ~ M_STRL
           '
-fitsub <- sem(model = subjectS, data = M_EMA, cluster = "ID")
+fitsub_s <- sem(model = subjectS, data = M_EMA, cluster = "ID")
 summary(fitsub)
