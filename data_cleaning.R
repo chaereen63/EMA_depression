@@ -15,3 +15,6 @@ mlema %>% group_by(ID) %>% mutate(M_STRL= mean(STR_L, na.rm = TRUE)) -> M_EMA
 M_EMA[,c("ID", "STR_L","M_STRL")]
 
 write.csv(M_EMA, "mean_STR.csv")
+#Not Appropriate Approach
+#M_EMA  %>% mutate(STR_L = ifelse(is.na(STR_L), 0, STR_L)) %>% as.data.frame() -> tests 
+#tests %>% group_by(ID) %>% mutate(M_STRL= mean(STR_L, na.rm = TRUE)) -> M_EMAtest

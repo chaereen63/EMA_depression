@@ -75,7 +75,7 @@ lavInspect(fitsub, 'h1') #비제약 모델에 대한 평균, 공분산
 subjectM2 <- 'level: 1
             CM_EXV ~ STR_YN  
             CM_RUM ~ CM_EXV + STR_YN
-            CM_DEP ~ CM_RUM + CM_EXV
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
            level: 2
             AM_RUM ~ STR_L
           '
@@ -122,7 +122,7 @@ intercept.as.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL,
 summary(intercept.as.outcome)
 VarCorr(intercept.as.outcome)
 intercept.slope.as.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL,
-                            random = ~ M_STRL | ID,
+                            random = ~ CM_EXV | ID,
                             M_EMA, method = "ML", na.action = na.omit)
 summary(intercept.slope.as.outcome)
 VarCorr(intercept.slope.as.outcome)
@@ -133,10 +133,11 @@ anova(intercept.slope.as.outcome, intercept.as.outcome)
 #summary(interaction.intercept.outcome)
 #anova(inercept.as.outcome, interaction.intercept.outcome)
 #VarCorr(interaction.intercept.outcome)
-#interaction.slope.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL + CM_EXV*M_STRL,
-#                                     random = ~ CM_EXV | ID,
-#                                     M_EMA, method = "ML", na.action = na.omit)
-#summary(interaction.slope.outcome)
+ctrl <- lmeControl(opt='optim')
+interaction.slope.outcome <- lme(CM_DEP ~ CM_RUM + CM_EXV + STR_YN + M_STRL + CM_EXV*M_STRL,
+                                     random = ~ CM_EXV | ID,
+                                     M_EMA, method = "ML", na.action = na.omit, control = ctrl)
+summary(interaction.slope.outcome)
 #VarCorr(interaction.slope.outcome)
 #anova(intercept.as.outcome, intercept.only)
 
@@ -144,11 +145,97 @@ anova(intercept.slope.as.outcome, intercept.as.outcome)
   ##SEM: 순차매개를 lme로는 볼 수가 없으므로 multi-level SEM으로 분석
   # 단 multi level sem은 모형 적합도를 산출해주지 않으므로 별도의 계산이 필요해 보임.
 subjectS <- 'level: 1
-            CM_EXV ~ STR_YN + M_STRL + STR_YN*M_STRL
+            CM_EXV ~ STR_YN
             CM_RUM ~ CM_EXV + STR_YN
             CM_DEP ~ CM_RUM + CM_EXV
            level: 2
             AM_EXV ~ M_STRL
           '
 fitsub_s <- sem(model = subjectS, data = M_EMA, cluster = "ID")
-summary(fitsub)
+summary(fitsub_s)
+
+subjectSN <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV
+           level: 2
+            i =~ CM_EXV + STR_YN
+            i ~ M_STRL
+          '
+fitsub_sn <- sem(model = subjectSN, data = M_EMA, cluster = "ID")
+summary(fitsub_sn)
+
+subjectest <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
+           level: 2
+           AM_EXV ~ STR_YN + M_STRL + STR_YN*M_STRL
+          '
+test <- sem(model = subjectest, data = M_EMA, cluster = "ID")
+summary(test)
+
+subjectest2 <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV
+           level: 2
+           AM_EXV ~ STR_YN + AM_NA + STR_YN*AM_NA
+          '
+test2 <- sem(model = subjectest2, data = M_EMA, cluster = "ID")
+summary(test2)
+####final###
+subjectS <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV
+           level: 2
+            AM_EXV ~ M_STRL
+          '
+fitsub_s <- sem(model = subjectS, data = M_EMA, cluster = "ID")
+summary(fitsub_s)
+subjectF <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
+           level: 2
+            AM_EXV ~ M_STRL + STR_YN + M_STRL*STR_YN
+          '
+fitsub_f <- sem(model = subjectF, data = M_EMA, cluster = "ID")
+summary(fitsub_f)
+
+
+
+
+
+
+#stress level에 따른 변화 (다만 해석이 애매... 평소 스트레스가 아니라 스트레스 사건에 대한 강도라서)
+subjectS2 <- 'level: 1
+            CM_EXV ~ STR_L
+            CM_RUM ~ CM_EXV + STR_L
+            CM_DEP ~ CM_RUM + CM_EXV + STR_L
+           level: 2
+            AM_EXV ~ M_STRL
+          '
+fitsub_s2 <- sem(model = subjectS2, data = M_EMA, cluster = "ID")
+summary(fitsub_s2)
+###random slope in sem###
+subjectRS <- 'level: 1
+            CM_EXV ~ a*STR_L
+            CM_RUM ~ CM_EXV + STR_L
+            CM_DEP ~ CM_RUM + CM_EXV + STR_L
+           level: 2
+            a ~ M_STRL
+          '
+fitsub_rs <- sem(model = subjectRS, data = M_EMA, cluster = "ID")
+summary(fitsub_rs)
+#부정정서 (nagative emotion)
+subjectNE <- 'level: 1
+            CM_EXV ~ STR_YN
+            CM_RUM ~ CM_EXV + STR_YN
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
+           level: 2
+            AM_EXV ~ AM_NA
+          '
+fitsub_NE <- sem(model = subjectNE, data = M_EMA, cluster = "ID")
+summary(fitsub_NE)
