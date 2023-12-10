@@ -77,7 +77,7 @@ subjectM2 <- 'level: 1
             CM_RUM ~ CM_EXV + STR_YN
             CM_DEP ~ CM_RUM + CM_EXV + STR_YN
            level: 2
-            AM_RUM ~ STR_L
+            STR_L ~~ STR_L
           '
 fitsub <- sem(model = subjectM2, data = ema, cluster = "ID")
 summary(fitsub)
@@ -147,9 +147,9 @@ summary(interaction.slope.outcome)
 subjectS <- 'level: 1
             CM_EXV ~ STR_YN
             CM_RUM ~ CM_EXV + STR_YN
-            CM_DEP ~ CM_RUM + CM_EXV
+            CM_DEP ~ CM_RUM + CM_EXV + STR_YN
            level: 2
-            AM_EXV ~ M_STRL
+            M_STRL ~ M_STRL
           '
 fitsub_s <- sem(model = subjectS, data = M_EMA, cluster = "ID")
 summary(fitsub_s)
